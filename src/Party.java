@@ -4,17 +4,22 @@ import java.util.Set;
 public class Party {
     private int partyNumber;
     private Set<Candidate> candidates;
-    int electedCandidates;
-    int nominalVotes;
-    int partyListVotes;
+    private int partyListVotes;
+    private String partyAcronym;
 
-    public Party(int partyNumber) {
+    public Party(int partyNumber, String partyAcronym ) {
         this.partyNumber = partyNumber;
+        this.partyAcronym = partyAcronym;
+        this.partyListVotes = 0;
         this.candidates = new HashSet<>();
     }
 
     public void addCandidate(Candidate candidate){
         candidates.add(candidate);
+    }
+
+    public String getPartyAcronym() {
+        return partyAcronym;
     }
 
     public Set<Candidate> getCandidates(){
@@ -24,9 +29,37 @@ public class Party {
         return this.partyNumber;
     }
 
-    public void setTotalVotes(){
+
+    public int getNominalVotes(){
+        int nominalVotes = 0;
         for(var v : candidates){
-            this.nominalVotes += v.getTotalVotes();
+            nominalVotes += v.getTotalVotes();
         }
+        return nominalVotes;
+    }
+
+    public int getPartyListVotes() {
+        return partyListVotes;
+    }
+
+    public void addPartyListVotes(int PartyListVotes){
+        if(PartyListVotes > 0){
+            this.partyListVotes += PartyListVotes;
+        }
+    }
+
+    public int getTotalVotes(){
+        int totalVotes = getNominalVotes() + getPartyListVotes();
+        return totalVotes;
+    }
+
+    public int getNumberOfElectedCandidates(){
+        int numberOfElected = 0;
+        for(var n : candidates){
+            if(n.isElected()){
+                numberOfElected++;
+            }
+        }
+        return numberOfElected;
     }
 }
