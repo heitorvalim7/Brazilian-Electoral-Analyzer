@@ -1,3 +1,5 @@
+package model;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 
@@ -12,5 +14,13 @@ public enum Election {
     Election() {
         this.parties = new HashMap<>();
         this.candidates = new HashMap<>();
+    }
+
+    public HashMap<Integer, Party> getParties() {
+        return parties;
+    }
+
+    public HashMap<Integer, Candidate> getCandidates() {
+        return candidates;
     }
 }

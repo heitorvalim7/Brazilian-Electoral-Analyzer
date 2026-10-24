@@ -1,18 +1,19 @@
+package model;
+
 import java.time.LocalDate;
 import java.time.Period;
 
 public class Candidate {
-    private String name;
     private String electionName;
     private int votingNumber;
     private int totalVotes;
     private LocalDate dateOfBirth;
     private Party party;
-    private boolean elected;
+    private int elected;
     private int federation;
     private int gender;
 
-    public Candidate(int gender, int federation, boolean elected, Party party, LocalDate dateOfBirth, int votingNumber, String electionName, String name) {
+    public Candidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, int votingNumber, String electionName) {
         this.gender = gender;
         this.federation = federation;
         this.elected = elected;
@@ -21,13 +22,7 @@ public class Candidate {
         this.totalVotes = 0;
         this.votingNumber = votingNumber;
         this.electionName = electionName;
-        this.name = name;
     }
-
-    public String getName() {
-        return name;
-    }
-
 
     public String getElectionName() {
         return electionName;
@@ -59,7 +54,8 @@ public class Candidate {
 
 
     public boolean isElected() {
-        return elected;
+        if (elected == 2 || elected == 3) { return true; } 
+        else { return false; }
     }
 
 
