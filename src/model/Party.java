@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Party {
-    private int partyNumber;
+    private String partyNumber;
     private Set<Candidate> candidates;
     private int partyListVotes;
     private String partyAcronym;
 
-    public Party(int partyNumber, String partyAcronym ) {
+    public Party(String partyNumber, String partyAcronym ) {
         this.partyNumber = partyNumber;
         this.partyAcronym = partyAcronym;
         this.partyListVotes = 0;
@@ -27,7 +27,7 @@ public class Party {
     public Set<Candidate> getCandidates(){
         return this.candidates;
     }
-    public int getPartyNumber(){
+    public String getPartyNumber(){
         return this.partyNumber;
     }
 

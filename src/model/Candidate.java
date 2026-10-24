@@ -5,7 +5,7 @@ import java.time.Period;
 
 public class Candidate {
     private String electionName;
-    private int votingNumber;
+    private String votingNumber;
     private int totalVotes;
     private LocalDate dateOfBirth;
     private Party party;
@@ -13,7 +13,7 @@ public class Candidate {
     private int federation;
     private int gender;
 
-    public Candidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, int votingNumber, String electionName) {
+    public Candidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName) {
         this.gender = gender;
         this.federation = federation;
         this.elected = elected;
@@ -29,7 +29,7 @@ public class Candidate {
     }
 
 
-    public int getVotingNumber() {
+    public String getVotingNumber() {
         return votingNumber;
     }
 

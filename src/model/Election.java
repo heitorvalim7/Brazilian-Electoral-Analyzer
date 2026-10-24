@@ -8,19 +8,19 @@ public enum Election {
     INSTANCE;
     private int municipalityCode;
     private LocalDate electionData;
-    private HashMap<Integer, Party> parties;
-    private HashMap<Integer, Candidate> candidates;
+    private HashMap<String, Party> parties;
+    private HashMap<String, Candidate> candidates;
 
     Election() {
         this.parties = new HashMap<>();
         this.candidates = new HashMap<>();
     }
 
-    public HashMap<Integer, Party> getParties() {
+    public HashMap<String, Party> getParties() {
         return parties;
     }
 
-    public HashMap<Integer, Candidate> getCandidates() {
+    public HashMap<String, Candidate> getCandidates() {
         return candidates;
     }
 }
