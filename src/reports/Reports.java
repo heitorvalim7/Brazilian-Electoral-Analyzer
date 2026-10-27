@@ -6,6 +6,7 @@ import model.Election;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Map;
 
 public class Reports {
@@ -37,7 +38,9 @@ public class Reports {
                     System.out.print("*");
                 }
 
-                System.out.println(c.getElectionName() + "(" + c.getParty().getPartyAcronym() + ", " + c.getTotalVotes() + "votos)");
+                String formatted = String.format(Locale.forLanguageTag("pt-BR"), "%,d", c.getTotalVotes());
+
+                System.out.println(c.getElectionName() + "(" + c.getParty().getPartyAcronym() + ", " + formatted + "votos)");
                 i++;
 
             }
