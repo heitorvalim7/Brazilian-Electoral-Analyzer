@@ -18,12 +18,29 @@
             this.candidates = new HashMap<>();
         }
 
-        public void addParty(Party party){
-            this.parties.put(party.getPartyNumber(), party);
+        public Party addParty(String partyNumber, String partyAcronym){
+            Party newParty = this.parties.computeIfAbsent(partyNumber, n -> new Party(n, partyAcronym));
+            return newParty;
         }
 
-        public void addCandidate(Candidate candidate){
-            this.candidates.put(candidate.getVotingNumber(), candidate);
+        public void addCandidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName){
+            Candidate newCandidate = new Candidate(gender, federation, elected, party, dateOfBirth, votingNumber, electionName);
+            this.candidates.computeIfAbsent(votingNumber, n -> newCandidate);
+            party.addCandidate(newCandidate);
+        }
+
+        public void sumVotesCandidate(String voteNumber, int numberOfVotes){
+            Candidate candidate = this.candidates.get(voteNumber);
+            if(candidate != null){
+                candidate.addVotes(numberOfVotes);
+            }
+        }
+
+        public void sumVotesParty(String voteNumber, int numberOfVotes){
+            Party party = this.parties.get(voteNumber);
+            if(party != null){
+                party.addPartyListVotes(numberOfVotes);
+            }
         }
 
         public Map<String, Party> getParties() {

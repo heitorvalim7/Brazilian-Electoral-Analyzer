@@ -31,7 +31,6 @@ public class Party {
         return this.partyNumber;
     }
 
-
     public int getNominalVotes(){
         int nominalVotes = 0;
         for(var v : candidates){

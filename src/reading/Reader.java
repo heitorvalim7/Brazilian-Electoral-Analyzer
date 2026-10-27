@@ -12,10 +12,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.HashMap;
 
-import model.Candidate;
+import model.Election;
 import model.Party;
+import model.Candidate;
 
 public class Reader {
 
@@ -37,7 +37,7 @@ public class Reader {
 
 
     // Lê o arquivo de canditados e popula os HashMaps de cnadidatos e partidos da instancia de Election
-    public static void readCandidates(int municipality, String candidateFile, HashMap<String, Candidate> candidates, HashMap<String, Party> parties) {
+    public static void readCandidates(String candidateFile) {
 
 
         try (FileInputStream fisCandidate = new FileInputStream(candidateFile);
@@ -49,21 +49,7 @@ public class Reader {
 
             String line = brCandidate.readLine();
             String[] header_columns = line.replace("\"", "").split(";");
-
-            for (int i = 0; i < header_columns.length; i++) {
-                switch (header_columns[i]) {
-                    case "SG_UE" -> SG_UE = i;
-                    case "CD_CARGO" -> CD_CARGO = i;
-                    case "NR_CANDIDATO" -> NR_CANDIDATO = i;
-                    case "NM_URNA_CANDIDATO" -> NM_URNA_CANDIDATO = i;
-                    case "NR_PARTIDO" -> NR_PARTIDO = i;
-                    case "SG_PARTIDO" -> SG_PARTIDO = i;
-                    case "NR_FEDERACAO" -> NR_FEDERACAO = i;
-                    case "DT_NASCIMENTO" -> DT_NASCIMENTO = i;
-                    case "CD_SIT_TOT_TURNO" -> CD_SIT_TOT_TURNO = i;
-                    case "CD_GENERO" -> CD_GENERO = i;
-                }
-            }
+            mapHeadersIndexCandidates(header_columns);
 
             String electionName;
             String votingNumber;
@@ -77,7 +63,7 @@ public class Reader {
 
                 String[] columns = line.replace("\"", "").split(";");
 
-                if (municipality != Integer.parseInt(columns[SG_UE]) || !Objects.equals(columns[CD_CARGO], "13")) {
+                if (Election.INSTANCE.getMunicipalityCode() != Integer.parseInt(columns[SG_UE]) || !Objects.equals(columns[CD_CARGO], "13")) {
                     continue;
                 }  
 
@@ -88,13 +74,8 @@ public class Reader {
                 federation = Integer.parseInt(columns[NR_FEDERACAO]);
                 gender = Integer.parseInt(columns[CD_GENERO]);
 
-                // Função própria do hashmap que verifica se a chave já existe, se não existe cria uma nova Party e adiciona no hashmap parties
-                party = parties.computeIfAbsent(columns[NR_PARTIDO], n -> new Party(n, columns[SG_PARTIDO]));
-                
-                Candidate newCandidate = new Candidate(gender, federation, elected, party, dateOfBirth, votingNumber, electionName);
-                candidates.put(votingNumber, newCandidate);
-
-                party.addCandidate(newCandidate);
+                party = Election.INSTANCE.addParty(columns[NR_PARTIDO], columns[SG_PARTIDO]);
+                Election.INSTANCE.addCandidate(gender, federation, elected, party, dateOfBirth, votingNumber, electionName);
 
             }
 
@@ -105,7 +86,7 @@ public class Reader {
 
     }
 
-    public static void readVotes(int municipality, String voteFile, HashMap<String, Candidate> candidates, HashMap<String, Party> parties) {
+    public static void readVotes(String voteFile) {
 
         try (FileInputStream fisVotes = new FileInputStream(voteFile);
              InputStreamReader isrVotes = new InputStreamReader(fisVotes, StandardCharsets.ISO_8859_1);
@@ -113,15 +94,7 @@ public class Reader {
 
             String line = brVotes.readLine();
             String[] header_columns = line.replace("\"", "").split(";");
-
-            for (int i = 0; i < header_columns.length; i++) {
-                switch (header_columns[i]) {
-                    case "CD_CARGO" -> CD_CARGO = i;
-                    case "CD_MUNICIPIO" -> CD_MUNICIPIO = i;
-                    case "NR_VOTAVEL" -> NR_VOTAVEL = i;
-                    case "QT_VOTOS" -> QT_VOTOS = i;
-                }
-            }
+            mapHeadersIndexVotes(header_columns);
 
             int quantityOfVotes;
             String voteNumber;
@@ -132,24 +105,50 @@ public class Reader {
                 
                 voteNumber = columns[NR_VOTAVEL];
                 
-                if (municipality != Integer.parseInt(columns[CD_MUNICIPIO]) || !Objects.equals(columns[CD_CARGO], "13") || !isValidVote(voteNumber)) {
+                if (Election.INSTANCE.getMunicipalityCode() != Integer.parseInt(columns[CD_MUNICIPIO]) || !Objects.equals(columns[CD_CARGO], "13") || !isValidVote(voteNumber)) {
                     continue;
                 }  
                
                 quantityOfVotes = Integer.parseInt(columns[QT_VOTOS]);
 
                 if (voteNumber.length() == 5) {
-                    Candidate c = candidates.get(voteNumber);
-                    if (c != null) { c.addVotes(quantityOfVotes); }
+                    Election.INSTANCE.sumVotesCandidate(voteNumber, quantityOfVotes);
                 }
                 else if (voteNumber.length() == 2) {
-                    Party p = parties.get(voteNumber);
-                    if (p != null) { p.addPartyListVotes(quantityOfVotes); }
+                    Election.INSTANCE.sumVotesParty(voteNumber, quantityOfVotes);
                 }
             }
 
         } catch (IOException e) {
             System.out.println("File " + e.toString() + " not found");
+        }
+    }
+
+    public static void mapHeadersIndexCandidates(String[] header_columns) {
+        for (int i = 0; i < header_columns.length; i++) {
+            switch (header_columns[i]) {
+                case "CD_CARGO" -> CD_CARGO = i;
+                case "SG_UE" -> SG_UE = i;
+                case "NR_CANDIDATO" -> NR_CANDIDATO = i;
+                case "NM_URNA_CANDIDATO" -> NM_URNA_CANDIDATO = i;
+                case "NR_PARTIDO" -> NR_PARTIDO = i;
+                case "SG_PARTIDO" -> SG_PARTIDO = i;
+                case "NR_FEDERACAO" -> NR_FEDERACAO = i;
+                case "DT_NASCIMENTO" -> DT_NASCIMENTO = i;
+                case "CD_SIT_TOT_TURNO" -> CD_SIT_TOT_TURNO = i;
+                case "CD_GENERO" -> CD_GENERO = i;
+            }
+        }
+    }
+
+    public static void mapHeadersIndexVotes(String[] header_columns) {
+        for (int i = 0; i < header_columns.length; i++) {
+            switch (header_columns[i]) {
+                case "CD_CARGO" -> CD_CARGO = i;
+                case "CD_MUNICIPIO" -> CD_MUNICIPIO = i;
+                case "NR_VOTAVEL" -> NR_VOTAVEL = i;
+                case "QT_VOTOS" -> QT_VOTOS = i;
+            }
         }
     }
 
