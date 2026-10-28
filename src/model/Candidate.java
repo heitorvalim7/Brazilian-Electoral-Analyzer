@@ -68,8 +68,9 @@ public class Candidate {
         return gender;
     }
 
-    public int calculateAge(LocalDate electionDate){
-        Period period = Period.between(this.dateOfBirth, electionDate);
+    public int calculateAge(){
+
+        Period period = Period.between(this.dateOfBirth, Election.INSTANCE.getElectionDate());
         int age = period.getYears();
         return age;
     }

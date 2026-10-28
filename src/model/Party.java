@@ -75,11 +75,11 @@ public class Party {
 
     public Candidate getMostVoted(){
         ArrayList<Candidate>list = getSortedCandidates();
-        return list.getFirst();
+        return list.get(0);
     }
     public Candidate getLeastVoted(){
         ArrayList<Candidate>list = getSortedCandidates();
-        return list.getLast();
+        return list.get(list.size()-1);
     }
 
 }
