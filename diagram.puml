@@ -1,0 +1,107 @@
+@startuml
+title Diagrama de Classes - Sistema Eleitoral (Vereadores 2024)
+
+' ---------------- Estilo ----------------
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundCorner 10
+skinparam nodesep 70
+skinparam ranksep 70
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1.3
+skinparam ClassFontStyle bold
+skinparam ClassFontSize 15
+skinparam ClassAttributeFontSize 12
+skinparam TitleFontSize 18
+skinparam LegendBackgroundColor white
+skinparam LegendBorderColor #CCCCCC
+hide empty members
+
+' ---------------- Classes ----------------
+' Cores por pacote: model (azul), reading (verde), reports (laranja), raiz (roxo)
+
+class App #F1ECFB;line:6A4FB3 {
+  {static} +main(args : String[])
+}
+
+class Reader <<reading>> #E6F4EA;line:2E7D32 {
+  {static} +readCandidates(candidateFile : String)
+  {static} +readVotes(voteFile : String)
+}
+
+class Reports <<reports>> #FFF3DC;line:C77700 {
+  +printAll()
+}
+
+enum Election <<model>> #E3EFFC;line:1F5FA8 {
+  INSTANCE
+  --
+  -municipalityCode : int
+  -electionDate : LocalDate
+  --
+  +initialize(municipalityCode : int, electionDate : LocalDate)
+  +addParty(partyNumber : String, partyAcronym : String) : Party
+  +addCandidate(...)
+}
+
+class Party <<model>> #E3EFFC;line:1F5FA8 {
+  -partyNumber : String
+  -partyAcronym : String
+  -partyListVotes : int
+  --
+  +getNominalVotes() : int
+  +getTotalVotes() : int
+  +getNumberOfElectedCandidates() : int
+}
+
+class Candidate <<model>> #E3EFFC;line:1F5FA8 {
+  -electionName : String
+  -votingNumber : String
+  -totalVotes : int
+  -dateOfBirth : LocalDate
+  -elected : int
+  -federation : int
+  -gender : Gender
+  --
+  +isElected() : boolean
+  +calculateAge() : int
+}
+
+enum Gender <<model>> #E3EFFC;line:1F5FA8 {
+  MALE
+  FEMALE
+}
+
+' ---------------- Layout em grade ----------------
+' Linha 1:  App
+' Linha 2:  Reader | Reports
+' Linha 3:  Election
+' Linha 4:  Party | Candidate
+' Linha 5:  Gender (abaixo de Candidate)
+
+App .down.> Reader
+App .down.> Reports
+Reader -[hidden]right- Reports
+
+Reader .down.> Election
+Reports .down.> Election
+
+Election "1" o-down- "*" Party : parties
+Election "1" o-down- "*" Candidate : candidates
+
+Party "1" -right- "*" Candidate
+
+' Gender é um enum aninhado em Candidate
+Candidate +-down- Gender
+
+legend bottom
+  |= Cor |= Pacote |
+  |<#E3EFFC>   | model |
+  |<#E6F4EA>   | reading |
+  |<#FFF3DC>   | reports |
+  |<#F1ECFB>   | raiz de src |
+endlegend
+
+@enduml
