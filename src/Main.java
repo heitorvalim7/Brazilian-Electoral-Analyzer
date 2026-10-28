@@ -5,7 +5,7 @@ import reading.Reader;
 import model.Election;
 import reports.Reports;
 
-public class App {
+public class Main {
     public static void main(String[] args) throws Exception {
         if(args.length == 4){
 
