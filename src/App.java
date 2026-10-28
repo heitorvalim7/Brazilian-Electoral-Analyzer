@@ -3,6 +3,7 @@ import java.time.LocalDate;
 
 import reading.Reader;
 import model.Election;
+import reports.Reports;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -16,13 +17,8 @@ public class App {
             
             Reader.readCandidates(candidatesFile);
             Reader.readVotes(votingFile);
-
-            // for (var party : Election.INSTANCE.getParties().values()) {
-            //     System.out.println("Party: " + party.getPartyAcronym() + " - Total Votes: " + party.getTotalVotes());
-            //     for (var candidate : party.getCandidates()) {
-            //         System.out.println("  Candidate: " + candidate.getVotingNumber() + " - Total Votes: " + candidate.getTotalVotes());
-            //     }
-            // }
+            Reports reports = new Reports();
+            reports.printAll();
 
         }
 

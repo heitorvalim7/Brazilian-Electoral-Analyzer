@@ -294,4 +294,26 @@ public class Reports {
         System.out.println("Total de votos nominais:   " + printNominalVotes + " (" + printPercentageOfNominalVotes + "%)");
         System.out.println("Total de votos de legenda: " + printPartyListVotes + " (" + printPercentageOfPartyListVotes+ "%)");
     }
+
+    public void printAll(){
+        printNumberOfElected();
+        System.out.println();
+        printElectedCandidates();
+        System.out.println();
+        printMostVotedCandidates();
+        System.out.println();
+        printNotElectedMostVoted();
+        System.out.println();
+        printLeastVotedElected();
+        System.out.println();
+        printPartyAndNumberOfElectedCandidates();
+        System.out.println();
+        printMostAndLeastVotedByParty();
+        System.out.println();
+        printElectedByAgeGroupPercentage();
+        System.out.println();
+        printElectedByGenderPercentage();
+        System.out.println();
+        printVotes();
+    }
 }
