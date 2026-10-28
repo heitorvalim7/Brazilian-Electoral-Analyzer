@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +20,13 @@ public class Party {
 
     public void addCandidate(Candidate candidate){
         candidates.add(candidate);
+    }
+
+    public ArrayList<Candidate> getSortedCandidates(){
+        ArrayList<Candidate>list = new ArrayList<>(getCandidates());
+        Comparator<Candidate>byVotes = (c1, c2) -> Integer.compare(c2.getTotalVotes(), c1.getTotalVotes());
+        list.sort(byVotes.thenComparing(Candidate::getdateOfBirth));
+        return list;
     }
 
     public String getPartyAcronym() {
@@ -63,4 +72,14 @@ public class Party {
         }
         return numberOfElected;
     }
+
+    public Candidate getMostVoted(){
+        ArrayList<Candidate>list = getSortedCandidates();
+        return list.getFirst();
+    }
+    public Candidate getLeastVoted(){
+        ArrayList<Candidate>list = getSortedCandidates();
+        return list.getLast();
+    }
+
 }

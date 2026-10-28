@@ -25,8 +25,7 @@
 
         public void addCandidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName){
             Candidate newCandidate = new Candidate(gender, federation, elected, party, dateOfBirth, votingNumber, electionName);
-            this.candidates.computeIfAbsent(votingNumber, n -> newCandidate);
-            party.addCandidate(newCandidate);
+            party.addCandidate(this.candidates.computeIfAbsent(votingNumber, n -> newCandidate));
         }
 
         public void sumVotesCandidate(String voteNumber, int numberOfVotes){
