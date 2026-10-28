@@ -5,6 +5,8 @@
     import java.util.HashMap;
     import java.util.Map;
 
+    import model.Candidate.Gender;
+
 
     public enum Election {
         INSTANCE;
@@ -23,7 +25,7 @@
             return newParty;
         }
 
-        public void addCandidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName){
+        public void addCandidate(Gender gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName){
             Candidate newCandidate = new Candidate(gender, federation, elected, party, dateOfBirth, votingNumber, electionName);
             party.addCandidate(this.candidates.computeIfAbsent(votingNumber, n -> newCandidate));
         }

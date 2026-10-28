@@ -1,14 +1,13 @@
 package reports;
 
 import model.Candidate;
+import model.Candidate.Gender;
 import model.Election;
 import model.Party;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Map;
 
 public class Reports {
 
@@ -278,11 +277,11 @@ public class Reports {
         for(var p : Election.INSTANCE.getParties().values()){
             for(var c : p.getCandidates()){
                 if(c.isElected()){
-                    int gender = c.getGender();
-                    if(gender == 2){
+                    Gender gender = c.getGender();
+                    if(gender == Gender.MALE){
                         men++;
                     }
-                    else if(gender == 4){
+                    else if(gender == Gender.FEMALE){
                         women++;
                     }
 

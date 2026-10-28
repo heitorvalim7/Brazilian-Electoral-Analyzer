@@ -21,6 +21,9 @@ public class Main {
             reports.printAll();
 
         }
+        else {
+            System.out.println("Comando inválido");
+        }
 
     }
 }

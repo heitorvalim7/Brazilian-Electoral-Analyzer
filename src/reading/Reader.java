@@ -1,7 +1,3 @@
-// TODO: Tratar possíveis exceções de parses
-// trocar o .replace, professor tinha comentado algo sobre isso?
-
-
 package reading;
 
 import java.io.BufferedReader;
@@ -15,7 +11,7 @@ import java.util.Objects;
 
 import model.Election;
 import model.Party;
-import model.Candidate;
+import model.Candidate.Gender;
 
 public class Reader {
 
@@ -57,7 +53,7 @@ public class Reader {
             Party party;
             int elected;
             int federation;
-            int gender;
+            Gender gender = null;
 
 
             while ((line = brCandidate.readLine()) != null) {
@@ -91,7 +87,11 @@ public class Reader {
                 votingNumber = columns[NR_CANDIDATO];
                 dateOfBirth = LocalDate.parse(columns[DT_NASCIMENTO], formatter);
                 federation = Integer.parseInt(columns[NR_FEDERACAO]);
-                gender = Integer.parseInt(columns[CD_GENERO]);
+            
+                int genderNum = Integer.parseInt(columns[CD_GENERO]);
+
+                if (genderNum == 2) { gender = Gender.MALE; }
+                else if (genderNum == 4) { gender = Gender.FEMALE; }
 
                 Election.INSTANCE.addCandidate(
                         gender,
@@ -107,8 +107,6 @@ public class Reader {
         } catch (IOException e) {
           System.out.println("File " + e.toString() + " not found");
         }
-
-
     }
 
     public static void readVotes(String voteFile) {

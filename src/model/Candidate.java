@@ -4,6 +4,12 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public class Candidate {
+
+    public static enum Gender {
+        MALE,
+        FEMALE;
+    };
+
     private String electionName;
     private String votingNumber;
     private int totalVotes;
@@ -11,9 +17,9 @@ public class Candidate {
     private Party party;
     private int elected;
     private int federation;
-    private int gender;
+    private Gender gender;
 
-    public Candidate(int gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName) {
+    public Candidate(Gender gender, int federation, int elected, Party party, LocalDate dateOfBirth, String votingNumber, String electionName) {
         this.gender = gender;
         this.federation = federation;
         this.elected = elected;
@@ -64,7 +70,7 @@ public class Candidate {
     }
 
 
-    public int getGender() {
+    public Gender getGender() {
         return gender;
     }
 
