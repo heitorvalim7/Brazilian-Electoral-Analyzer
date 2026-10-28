@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import model.Election;
@@ -54,59 +55,65 @@ public class Reader {
             int elected;
             int federation;
             Gender gender = null;
+            int lineNumber = 1;
 
 
             while ((line = brCandidate.readLine()) != null) {
 
-                String[] columns = line.replace("\"", "").split(";");
+                lineNumber++;
 
-                if (!Objects.equals(columns[CD_CARGO], "13")) {
-                    continue;
+                try {
+
+                    String[] columns = line.replace("\"", "").split(";");
+    
+                    if (!Objects.equals(columns[CD_CARGO], "13")) {
+                        continue;
+                    }
+    
+                    party = Election.INSTANCE.addParty(
+                            columns[NR_PARTIDO],
+                            columns[SG_PARTIDO]
+                    );
+    
+                    if (Election.INSTANCE.getMunicipalityCode() !=
+                            Integer.parseInt(columns[SG_UE])) {
+                        continue;
+                    }
+    
+                    elected = Integer.parseInt(columns[CD_SIT_TOT_TURNO]);
+    
+                    if (elected == -1) {
+                        continue;
+                    }
+    
+                    electionName = columns[NM_URNA_CANDIDATO]
+                            .trim()
+                            .replaceAll("\\s+", " ");
+    
+                    votingNumber = columns[NR_CANDIDATO];
+                    dateOfBirth = LocalDate.parse(columns[DT_NASCIMENTO], formatter);
+                    federation = Integer.parseInt(columns[NR_FEDERACAO]);
+                    gender = parseGender(Integer.parseInt(columns[CD_GENERO]));
+    
+                    Election.INSTANCE.addCandidate(
+                            gender,
+                            federation,
+                            elected,
+                            party,
+                            dateOfBirth,
+                            votingNumber,
+                            electionName
+                    );
+
+                } catch (IllegalArgumentException | DateTimeParseException | ArrayIndexOutOfBoundsException e) {
+                    warnInvalidLine(candidateFile, lineNumber, e);
                 }
-
-                party = Election.INSTANCE.addParty(
-                        columns[NR_PARTIDO],
-                        columns[SG_PARTIDO]
-                );
-
-                if (Election.INSTANCE.getMunicipalityCode() !=
-                        Integer.parseInt(columns[SG_UE])) {
-                    continue;
-                }
-
-                elected = Integer.parseInt(columns[CD_SIT_TOT_TURNO]);
-
-                if (elected == -1) {
-                    continue;
-                }
-
-                electionName = columns[NM_URNA_CANDIDATO]
-                        .trim()
-                        .replaceAll("\\s+", " ");
-
-                votingNumber = columns[NR_CANDIDATO];
-                dateOfBirth = LocalDate.parse(columns[DT_NASCIMENTO], formatter);
-                federation = Integer.parseInt(columns[NR_FEDERACAO]);
-            
-                int genderNum = Integer.parseInt(columns[CD_GENERO]);
-
-                if (genderNum == 2) { gender = Gender.MALE; }
-                else if (genderNum == 4) { gender = Gender.FEMALE; }
-
-                Election.INSTANCE.addCandidate(
-                        gender,
-                        federation,
-                        elected,
-                        party,
-                        dateOfBirth,
-                        votingNumber,
-                        electionName
-                );
             }
 
         } catch (IOException e) {
           System.out.println("File " + e.toString() + " not found");
         }
+
     }
 
     public static void readVotes(String voteFile) {
@@ -121,25 +128,35 @@ public class Reader {
 
             int quantityOfVotes;
             String voteNumber;
+            int lineNumber = 1;
 
             while ((line = brVotes.readLine()) != null) {
 
-                String[] columns = line.replace("\"", "").split(";");
-                
-                voteNumber = columns[NR_VOTAVEL];
-                
-                if (Election.INSTANCE.getMunicipalityCode() != Integer.parseInt(columns[CD_MUNICIPIO]) || !Objects.equals(columns[CD_CARGO], "13") || !isValidVote(voteNumber)) {
-                    continue;
-                }  
-               
-                quantityOfVotes = Integer.parseInt(columns[QT_VOTOS]);
+                lineNumber++;
 
-                if (voteNumber.length() == 5) {
-                    Election.INSTANCE.sumVotesCandidate(voteNumber, quantityOfVotes);
+                try {
+
+                    String[] columns = line.replace("\"", "").split(";");
+                    
+                    voteNumber = columns[NR_VOTAVEL];
+                    
+                    if (Election.INSTANCE.getMunicipalityCode() != Integer.parseInt(columns[CD_MUNICIPIO]) || !Objects.equals(columns[CD_CARGO], "13") || !isValidVote(voteNumber)) {
+                        continue;
+                    }  
+                   
+                    quantityOfVotes = Integer.parseInt(columns[QT_VOTOS]);
+    
+                    if (voteNumber.length() == 5) {
+                        Election.INSTANCE.sumVotesCandidate(voteNumber, quantityOfVotes);
+                    }
+                    else if (voteNumber.length() == 2) {
+                        Election.INSTANCE.sumVotesParty(voteNumber, quantityOfVotes);
+                    }
+
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    warnInvalidLine(voteFile, lineNumber, e);
                 }
-                else if (voteNumber.length() == 2) {
-                    Election.INSTANCE.sumVotesParty(voteNumber, quantityOfVotes);
-                }
+
             }
 
         } catch (IOException e) {
@@ -147,7 +164,7 @@ public class Reader {
         }
     }
 
-    public static void mapHeadersIndexCandidates(String[] header_columns) {
+    private static void mapHeadersIndexCandidates(String[] header_columns) {
         for (int i = 0; i < header_columns.length; i++) {
             switch (header_columns[i]) {
                 case "CD_CARGO" -> CD_CARGO = i;
@@ -164,7 +181,7 @@ public class Reader {
         }
     }
 
-    public static void mapHeadersIndexVotes(String[] header_columns) {
+    private static void mapHeadersIndexVotes(String[] header_columns) {
         for (int i = 0; i < header_columns.length; i++) {
             switch (header_columns[i]) {
                 case "CD_CARGO" -> CD_CARGO = i;
@@ -175,11 +192,24 @@ public class Reader {
         }
     }
 
-    public static boolean isValidVote(String voteNumber) {
+    private static boolean isValidVote(String voteNumber) {
         if (voteNumber.equals("95") || voteNumber.equals("96") || voteNumber.equals("97") || voteNumber.equals("98")) {
             return false;
         }
         return true;
     }
+
+    private static Gender parseGender(int genderCode) {
+        return switch (genderCode) {
+            case 2 -> Gender.MALE;
+            case 4 -> Gender.FEMALE;
+            default -> throw new IllegalArgumentException("unknown gender code: " + genderCode);
+        };
+    }
+
+    private static void warnInvalidLine(String file, int lineNumber, Exception e) {
+        System.err.println("Warning: line " + lineNumber + " of " + file + " ignored (" + e.getMessage() + ")");
+    }
+
 }
 

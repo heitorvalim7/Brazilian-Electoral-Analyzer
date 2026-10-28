@@ -22,7 +22,7 @@ public class Main {
 
         }
         else {
-            System.out.println("Comando inválido");
+            System.out.println("Comando inválido - passe como parâmetro: código do município, caminho do CSV dos candidatos, caminho do CSV da votação da seção, data da eleição.");
         }
 
     }
