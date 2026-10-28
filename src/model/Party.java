@@ -25,6 +25,7 @@ public class Party {
     public ArrayList<Candidate> getSortedCandidates(){
         ArrayList<Candidate>list = new ArrayList<>(getCandidates());
         Comparator<Candidate>byVotes = (c1, c2) -> Integer.compare(c2.getTotalVotes(), c1.getTotalVotes());
+        list.removeIf(c -> c.getTotalVotes() == 0);
         list.sort(byVotes.thenComparing(Candidate::getdateOfBirth));
         return list;
     }

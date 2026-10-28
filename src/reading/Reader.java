@@ -59,24 +59,49 @@ public class Reader {
             int federation;
             int gender;
 
+
             while ((line = brCandidate.readLine()) != null) {
 
                 String[] columns = line.replace("\"", "").split(";");
 
-                if (Election.INSTANCE.getMunicipalityCode() != Integer.parseInt(columns[SG_UE]) || !Objects.equals(columns[CD_CARGO], "13")) {
+                if (!Objects.equals(columns[CD_CARGO], "13")) {
                     continue;
-                }  
+                }
 
-                electionName = columns[NM_URNA_CANDIDATO];
+                party = Election.INSTANCE.addParty(
+                        columns[NR_PARTIDO],
+                        columns[SG_PARTIDO]
+                );
+
+                if (Election.INSTANCE.getMunicipalityCode() !=
+                        Integer.parseInt(columns[SG_UE])) {
+                    continue;
+                }
+
+                elected = Integer.parseInt(columns[CD_SIT_TOT_TURNO]);
+
+                if (elected == -1) {
+                    continue;
+                }
+
+                electionName = columns[NM_URNA_CANDIDATO]
+                        .trim()
+                        .replaceAll("\\s+", " ");
+
                 votingNumber = columns[NR_CANDIDATO];
                 dateOfBirth = LocalDate.parse(columns[DT_NASCIMENTO], formatter);
-                elected = Integer.parseInt(columns[CD_SIT_TOT_TURNO]);
                 federation = Integer.parseInt(columns[NR_FEDERACAO]);
                 gender = Integer.parseInt(columns[CD_GENERO]);
 
-                party = Election.INSTANCE.addParty(columns[NR_PARTIDO], columns[SG_PARTIDO]);
-                Election.INSTANCE.addCandidate(gender, federation, elected, party, dateOfBirth, votingNumber, electionName);
-
+                Election.INSTANCE.addCandidate(
+                        gender,
+                        federation,
+                        elected,
+                        party,
+                        dateOfBirth,
+                        votingNumber,
+                        electionName
+                );
             }
 
         } catch (IOException e) {

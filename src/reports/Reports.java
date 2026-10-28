@@ -130,7 +130,6 @@ public class Reports {
     }
 
     public void printLeastVotedElected(){
-        int n = getNumberOfElected();
         ArrayList<Candidate>list = getSortedCandidates();
         int i = 1;
 
@@ -154,24 +153,55 @@ public class Reports {
         }
     }
 
-    public void printPartyAndNumberOfElectedCandidates(){
-        ArrayList<Party>list = getSortedParties();
+    public void printPartyAndNumberOfElectedCandidates() {
+        ArrayList<Party> list = getSortedParties();
         int i = 1;
 
         System.out.println("Votação dos partidos e número de candidatos eleitos:");
-        for(var p : list){
-            String totalVotes = String.format(Locale.forLanguageTag("pt-BR"), "%,d", p.getTotalVotes());
-            String nominalVotes = String.format(Locale.forLanguageTag("pt-BR"), "%,d", p.getNominalVotes());
-            String partyListVotes = String.format(Locale.forLanguageTag("pt-BR"), "%,d", p.getPartyListVotes());
+        for (var p : list) {
 
-            System.out.print(i + " - " + p.getPartyAcronym() + " - " + p.getPartyNumber() + ", "  + totalVotes + " votos " + "(" + nominalVotes + " nominais e " + partyListVotes + " de legenda), ");
-            if(p.getNumberOfElectedCandidates() > 1){
-                System.out.println(p.getNumberOfElectedCandidates() + " candidatos eleitos");
+            String totalVotes = String.format(
+                    Locale.forLanguageTag("pt-BR"),
+                    "%,d",
+                    p.getTotalVotes()
+            );
+
+            String nominalVotes = String.format(
+                    Locale.forLanguageTag("pt-BR"),
+                    "%,d",
+                    p.getNominalVotes()
+            );
+
+            String partyListVotes = String.format(
+                    Locale.forLanguageTag("pt-BR"),
+                    "%,d",
+                    p.getPartyListVotes()
+            );
+
+            String totalLabel = p.getTotalVotes() > 1 ? " votos" : " voto";
+            String nominalLabel = p.getNominalVotes() > 1 ? " nominais" : " nominal";
+
+            System.out.print(
+                    i + " - " +
+                            p.getPartyAcronym() + " - " +
+                            p.getPartyNumber() + ", " +
+                            totalVotes + totalLabel + " (" +
+                            nominalVotes + nominalLabel + " e " +
+                            partyListVotes + " de legenda), "
+            );
+
+            if (p.getNumberOfElectedCandidates() > 1) {
+                System.out.println(
+                        p.getNumberOfElectedCandidates() + " candidatos eleitos"
+                );
+            } else {
+                System.out.println(
+                        p.getNumberOfElectedCandidates() + " candidato eleito"
+                );
             }
-            else System.out.println(p.getNumberOfElectedCandidates() + " candidato eleito");
+
             i++;
         }
-
     }
 
     public void printMostAndLeastVotedByParty(){
