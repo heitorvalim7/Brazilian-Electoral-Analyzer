@@ -22,7 +22,7 @@ hide empty members
 ' ---------------- Classes ----------------
 ' Cores por pacote: model (azul), reading (verde), reports (laranja), raiz (roxo)
 
-class App #F1ECFB;line:6A4FB3 {
+class Main #F1ECFB;line:6A4FB3 {
   {static} +main(args : String[])
 }
 
@@ -75,14 +75,14 @@ enum Gender <<model>> #E3EFFC;line:1F5FA8 {
 }
 
 ' ---------------- Layout em grade ----------------
-' Linha 1:  App
+' Linha 1:  Main
 ' Linha 2:  Reader | Reports
 ' Linha 3:  Election
 ' Linha 4:  Party | Candidate
 ' Linha 5:  Gender (abaixo de Candidate)
 
-App .down.> Reader
-App .down.> Reports
+Main .down.> Reader
+Main .down.> Reports
 Reader -[hidden]right- Reports
 
 Reader .down.> Election
